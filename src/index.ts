@@ -7,20 +7,29 @@ const PORT = 8080;
 app.use(middlewareLogResponse);
 app.use('/app', middlewareMetricsInc, express.static('./src/app'), );
 app.get('/api/healthz', handlerReadiness);
-app.get('/api/metrics', handlerRequestCounter);
-app.get('/api/reset', handlerResetRequestCounter);
+app.get('/admin/metrics', handlerRequestCounter);
+app.get('/admin/reset', handlerResetRequestCounter);
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
 
 function handlerReadiness(req:Request, res:Response):void{
-  res.set('Content-Type', 'text/plain;charset=utf-8');
+  res.set('Content-Type', 'text/text; charset=utf-8');
   res.status(200).send("OK");
 };
 
 function handlerRequestCounter(req:Request, res: Response):void{
-  res.set('Content-Type', 'text/plain; charset=utf-8');
-  res.status(200).send(`Hits: ${config.fileserverHits}`);
+  res.set('Content-Type', 'text/html; charset=utf-8');
+  res.status(200)
+  res.write(`
+    <html>
+    <body>
+      <h1>Welcome, Chirpy Admin</h1>
+      <p>Chirpy has been visited ${config.fileserverHits} times!</p>
+    </body>
+    </html>`
+  );
+  res.send();
 }
 
 function handlerResetRequestCounter(req:Request, res: Response):void{
